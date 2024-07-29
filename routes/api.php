@@ -23,4 +23,4 @@ Route::get('liga', [Ligacontroller::class, 'index']);
 Route::post('liga', [Ligacontroller::class, 'store']);
 Route::get('liga/{id}', [Ligacontroller::class, 'show']);
 Route::put('liga/{id}', [Ligacontroller::class, 'update']);
-Route::delete('liga/{id}', [Ligacontroller::class, 'delete']);
+Route::delete('liga/{id}', [Ligacontroller::class, 'destroy']);
