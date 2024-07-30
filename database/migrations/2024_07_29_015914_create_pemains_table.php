@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('pemains', function (Blueprint $table) {
             $table->id();
             $table->string('nama_pemain');
-            $table->string('logo');
+            $table->string('foto');
             $table->date('tgl_lahir');
             $table->integer('harga_pasar');
             $table->enum('posisi',['gk', 'df', 'mf', 'fw']);
