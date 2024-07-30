@@ -151,6 +151,7 @@ class FanController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Fan berhasil dihapus',
+                'data' => $fan,
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
