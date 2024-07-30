@@ -90,7 +90,7 @@ class PemainController extends Controller
                 'success' => true,
                 'message' => 'Detail Pemain',
                 'data' => $pemain,
-            ], 404);
+            ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
