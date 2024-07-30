@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\LigaController;
 use App\Http\Controllers\Api\KlubController;
 use App\Http\Controllers\Api\PemainController;
+use App\Http\Controllers\Api\FanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,3 +33,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::resource('liga', LigaController::class)->except(['edit', 'create']);
 Route::resource('klub', KlubController::class)->except(['edit', 'create']);
 Route::resource('pemain', PemainController::class)->except(['edit', 'create']);
+Route::resource('fan', FanController::class)->except(['edit', 'create']);

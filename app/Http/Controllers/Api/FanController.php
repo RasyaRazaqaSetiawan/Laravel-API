@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Klub;
 use Illuminate\Http\Request;
+use App\Models\Fan;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 
-class KlubController extends Controller
+class FanController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,11 +17,11 @@ class KlubController extends Controller
      */
     public function index()
     {
-        $klub = Klub::latest()->get();
+        $fan = Fan::with('klub')->latest()->get();
         return response()->json([
             'success' => true,
-            'message' => 'Daftar Klub',
-            'data' => $klub,
+            'message' => 'Daftar Fans',
+            'data' => $fan,
         ], 200);
     }
 
@@ -34,36 +34,35 @@ class KlubController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nama_klub' => 'required|unique:klubs',
-            'logo' => 'required|image|max:2048',
-            'id_liga' => 'required'
+            'nama_fan' => 'required',
+            'klub' => 'required|array'
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Data tidak valid',
+                'message' => 'Validasi Gagal',
                 'errors' => $validator->errors(),
             ], 422);
         }
 
         try {
-            // Upload image
-            $path = $request->file('logo')->store('public/logo');
-            $klub = new Klub;
-            $klub->nama_klub = $request->nama_klub;
-            $klub->logo = $path;
-            $klub->id_liga = $request->id_liga;
-            $klub->save();
+            $fan = new Fan();
+            $fan->nama_fan = $request->nama_fan;
+            $fan->save();
+
+            // Banayak Klub
+            $fan->klub()->attach($request->klub);
+
             return response()->json([
                 'success' => true,
-                'message' => 'Data Berhasil Dibuat',
-                'data' => $klub,
+                'message' => 'Fan berhasil ditambahkan',
+                'data' => $fan,
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Terjadi Kesalahan',
+                'message' => 'Terjadi kesalahan',
                 'errors' => $e->getMessage(),
             ], 500);
         }
@@ -78,11 +77,11 @@ class KlubController extends Controller
     public function show($id)
     {
         try {
-            $klub = Klub::findOrFail($id);
+            $fan = Fan::with('klub')->findOrFail($id);
             return response()->json([
                 'success' => true,
-                'message' => 'Detail klub',
-                'data' => $klub,
+                'message' => 'Detail Fan',
+                'data' => $fan,
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -102,40 +101,36 @@ class KlubController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $klub = Klub::findOrFail($id);
         $validator = Validator::make($request->all(), [
-            'nama_klub' => 'required|unique:klubs',
-            'logo' => 'nullable|image|max:2048',
-            'id_liga' => 'required',
+            'nama_fan' => 'required',
+            'klub' => 'required|array'
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Data tidak valid',
+                'message' => 'Validasi Gagal',
                 'errors' => $validator->errors(),
             ], 422);
         }
 
         try {
-            // Hapus Logo Lama/Foto Lama
-            if ($request->hasFile('logo')) {
-                Storage::delete($klub->logo);
-                $path = $request->file('logo')->store('public/logo');
-                $klub->logo = $path;
-            }
-            $klub->nama_klub = $request->nama_klub;
-            $klub->id_liga = $request->id_liga;
-            $klub->save();
+            $fan = Fan::findOrFail($id);
+            $fan->nama_fan = $request->nama_fan;
+            $fan->save();
+
+            // Lampirkan Banyak Klub
+            $fan->klub()->sync($request->klub);
+
             return response()->json([
                 'success' => true,
-                'message' => 'Data Berhasil Diperbarui',
-                'data' => $klub,
+                'message' => 'Fan berhasil diperbarui',
+                'data' => $fan,
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Terjadi Kesalahan',
+                'message' => 'Terjadi kesalahan',
                 'errors' => $e->getMessage(),
             ], 500);
         }
@@ -150,17 +145,17 @@ class KlubController extends Controller
     public function destroy($id)
     {
         try {
-            $klub = Klub::findOrFail($id);
-            Storage::delete($klub->logo);
-            $klub->delete();
+            $fan = Fan::findOrFail($id);
+            $fan->klub()->detach();
+            $fan->delete();
             return response()->json([
                 'success' => true,
-                'message' => 'Data ' . $klub->nama_klub . ' Berhasil DiHapus',
+                'message' => 'Fan berhasil dihapus',
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Data Tidak Ada',
+                'message' => 'Terjadi kesalahan',
                 'errors' => $e->getMessage(),
             ], 500);
         }

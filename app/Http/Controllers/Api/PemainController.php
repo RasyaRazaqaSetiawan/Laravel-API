@@ -36,7 +36,7 @@ class PemainController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'nama_pemain' => 'required|unique:pemains',
-            'foto' => 'required|image|max:2048',
+            'foto' => 'required|image|mimes:png,jpg',
             'tgl_lahir' => 'required|date',
             'harga_pasar' => 'required|integer',
             'posisi' => 'required|in:gk,df,mf,fw',
@@ -111,7 +111,7 @@ class PemainController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'nama_pemain' => 'required',
-            'foto' => 'required|image|max:2048',
+            'foto' => 'nullable|image|mimes:png,jpg',
             'tgl_lahir' => 'required|date',
             'harga_pasar' => 'required|integer',
             'posisi' => 'required|in:gk,df,mf,fw',
