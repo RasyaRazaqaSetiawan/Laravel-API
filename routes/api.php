@@ -36,8 +36,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('klub', KlubController::class)->except(['edit', 'create']);
     Route::resource('pemain', PemainController::class)->except(['edit', 'create']);
     Route::resource('fan', FanController::class)->except(['edit', 'create']);
+    Route::post('logout', [App\Http\Controllers\Api\AuthController::class, 'logout']);
 });
 
 //Route Auth
-Route::post('login', [App\Http\Controllers\Api\AuthController::class, 'login']);
 Route::post('register', [App\Http\Controllers\Api\AuthController::class, 'register']);
+Route::post('login', [App\Http\Controllers\Api\AuthController::class, 'login']);
+
