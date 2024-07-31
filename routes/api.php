@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\LigaController;
 use App\Http\Controllers\Api\KlubController;
 use App\Http\Controllers\Api\PemainController;
@@ -30,7 +31,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // Route::delete('liga/{id}', [Ligacontroller::class, 'destroy']);
 
 //Route Matic
-Route::resource('liga', LigaController::class)->except(['edit', 'create']);
-Route::resource('klub', KlubController::class)->except(['edit', 'create']);
-Route::resource('pemain', PemainController::class)->except(['edit', 'create']);
-Route::resource('fan', FanController::class)->except(['edit', 'create']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::resource('liga', LigaController::class)->except(['edit', 'create']);
+    Route::resource('klub', KlubController::class)->except(['edit', 'create']);
+    Route::resource('pemain', PemainController::class)->except(['edit', 'create']);
+    Route::resource('fan', FanController::class)->except(['edit', 'create']);
+});
+
+//Route Auth
+Route::post('login', [App\Http\Controllers\Api\AuthController::class, 'login']);
+Route::post('register', [App\Http\Controllers\Api\AuthController::class, 'register']);
